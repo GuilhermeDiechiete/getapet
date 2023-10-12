@@ -1,22 +1,25 @@
 {
-  "name": "backend",
+  "name": "server-getapet",
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
     "start": "nodemon ./index.js localhost 5000"
   },
-  "author": "Matheus <matheus@horadecodar.com.br> (http://www.horadecodar.com.br/)",
+  "author": "Guilherme Diechiete da Silva",
   "license": "MIT",
   "dependencies": {
     "bcrypt": "^5.0.1",
+    "body-parser": "^1.20.2",
     "cookie-parser": "^1.4.5",
     "cors": "^2.8.5",
+    "dotenv": "^16.3.1",
     "express": "^4.17.1",
     "jsonwebtoken": "^9.0.2",
     "mongoose": "^6.0.6",
-    "multer": "^1.4.3",
-    "nodemon": "^2.0.12"
+    "multer": "^1.4.3"
+  },
+  "devDependencies": {
+    "nodemon": "^3.0.1"
   }
 }

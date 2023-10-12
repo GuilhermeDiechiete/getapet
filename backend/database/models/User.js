@@ -1,4 +1,4 @@
-const mongoose = require('../db/conn')
+const mongoose = require('../connection')
 const { Schema } = mongoose
 
 const User = mongoose.model(

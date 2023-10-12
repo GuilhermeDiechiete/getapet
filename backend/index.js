@@ -1,22 +1,17 @@
 const express = require('express')
-const cors = require('cors')
-
 const app = express()
+require("dotenv").config()
+const cors = require('cors')
+const bodyParser = require("body-parser")
 
-// Config JSON response
-app.use(express.json())
-
-// Solve CORS
-app.use(cors({ credentials: true, origin: 'http://localhost:3000' }))
-
-// Public folder for images
+app.use(bodyParser.json())
+app.use(cors({ credentials: true, origin: process.env.PORT_FRONT }))
 app.use(express.static('public'))
 
-// Routes
+
 const PetRoutes = require('./routes/PetRoutes')
 const UserRoutes = require('./routes/UserRoutes')
-
 app.use('/pets', PetRoutes)
 app.use('/users', UserRoutes)
 
-app.listen(4000)
+app.listen(process.env.SERVER, ()=> console.log("Server running port:" + process.env.SERVER))
