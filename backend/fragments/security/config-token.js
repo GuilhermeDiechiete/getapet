@@ -16,7 +16,7 @@ exports.createToken = async(user, req, res) => {
 
 // Função para pegar o token
 exports.getToken = (req) => {
-    const authHeader = req.headers["authorization"] // pegar o token que vem na req
+    const authHeader = req.headers["authorization"]// pegar o token que vem na req
     const token = authHeader && authHeader.split(" ")[1] // retira o "Bearer" que vem na frente
     return token // retorna somente o token
 }
@@ -44,15 +44,26 @@ exports.verifyToken = (req, res, next) => {
   }
 }
 
-exports.getByToken = async (token) => {
-    if (!token) return res.status(401).json({ error: "Acesso negado!" });
+exports.getByToken = async (req) => {
+    const token = this.getToken(req)
+    if (!token) return res.status(401).json({ error: "Acesso negado!" })
   
     // find user
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
-  
-    const userId = decoded.id;
-  
-    const user = await User.findOne({ _id: userId });
-  
-    return user;
+    
+    const userId = decoded.id
+    
+    try {
+        const user = await User.findOne({ _id: userId })
+        console.log(user)
+        return user
+    } catch (error) {
+        console.log("erro ao pegar com token")
+    }
+    
+
+    
+    
+    
   };
+  

@@ -1,15 +1,9 @@
 const User = require('../database/models/User')
 
-const jwt = require('jsonwebtoken')
+
 const encrypt = require("../fragments/security/config-password")
-// falta os token 
-
-
-
-// helpers
-const getUserByToken = require('../helpers/get-user-by-token')
-const getToken = require('../helpers/get-token')
-const createUserToken = require('../helpers/create-user-token')
+const tk = require("../fragments/security/config-token")
+const jwt = require("jsonwebtoken")
 const { imageUpload } = require('../helpers/image-upload')
 
 module.exports = class UserController {
@@ -17,7 +11,6 @@ module.exports = class UserController {
 
     const { name, email, phone, password, confirmpassword } = req.body
   
-    // validations
     if (!name) {
       res.status(422).json({ message: 'O nome é obrigatório!' })
       return
@@ -56,12 +49,14 @@ module.exports = class UserController {
 
     try {
       const newUser = await user.save()
-      await createUserToken(newUser, req, res)
+      await tk.createToken(newUser, req, res)
+      res.status(200).json({message: "Usuário criado com sucesso."})
 
     } catch (error) {
+      console.log("---User Register - Error generating token.")
       res.status(500).json({ message: error })
     }
-  }
+  } 
 
   static async login(req, res) {
 
@@ -87,19 +82,30 @@ module.exports = class UserController {
     if (!checkPassword) {
       return res.status(422).json({ message: 'Senha inválida' })
     }
-    await createUserToken(user, req, res)
+    try {
+      await tk.createToken(user, req, res)
+      res.status(200).json({message: "Login efetuado com sucesso."})
+    } catch (error) {
+      console.log("--- User login - Error login")
+    }
+    
   }
 
   static async checkUser(req, res) {
     let currentUser
 
     if (req.headers.authorization) {
-      const token = getToken(req)
-      const decoded = jwt.verify(token, 'nossosecret')
-
-      currentUser = await User.findById(decoded.id)
-
-      currentUser.password = undefined
+      const token = tk.getToken(req)
+      const decoded = jwt.verify(token, process.env.JWT_SECRET)
+      console.log(decoded)
+      const user = await User.findById(decoded.id)
+      console.log(user)
+      if(user){
+        currentUser = { ...user.toObject()}
+        currentUser.password = undefined
+      } else {
+        currentUser = null
+      }
     } else {
       currentUser = null
     }
@@ -120,11 +126,13 @@ module.exports = class UserController {
   }
 
   static async editUser(req, res) {
-    const token = getToken(req)
-    const user = await getUserByToken(token)
 
+    
+    
     const { name, email, phone, password, confirmpassword } = req.body
 
+    const user = await tk.getByToken(req)
+    console.log(user)
     let image = ''
 
     if (req.file) {
@@ -135,21 +143,18 @@ module.exports = class UserController {
       res.status(422).json({ message: 'O nome é obrigatório!' })
       return
     }
-    user.name = name
-
+    user.name = name 
     if (!email) {
       res.status(422).json({ message: 'O e-mail é obrigatório!' })
       return
     }
     // check if user exists
     const userExists = await User.findOne({ email: email })
-
+    user.email = email
     if (user.email !== email && userExists) {
       res.status(422).json({ message: 'Por favor, utilize outro e-mail!' })
       return
     }
-    user.email = email
-
     if (image) {
       const imageName = req.file.filename
       user.image = imageName
