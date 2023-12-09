@@ -42,7 +42,7 @@ function Navbar() {
               <Link to="/login">Entrar</Link>
             </li>
             <li>
-              <Link to="/register">Registar</Link>
+              <Link to="/register">Registrar</Link>
             </li>
           </>
         )}
