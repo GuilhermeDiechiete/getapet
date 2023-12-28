@@ -9,6 +9,7 @@ const { imageUpload } = require('../helpers/image-upload')
 module.exports = class UserController {
   static async register(req, res) {
 
+    console.log(req)
     const { name, email, phone, password, confirmpassword } = req.body
   
     if (!name) {

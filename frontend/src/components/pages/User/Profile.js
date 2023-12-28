@@ -45,7 +45,7 @@ function Profile() {
 
     const formData = new FormData()
 
-    const userFormData = await Object.keys(user).forEach((key) =>
+    const userFormData = Object.keys(user).forEach((key) =>
       formData.append(key, user[key]),
     )
 
